@@ -8,9 +8,11 @@ fi
 if [ ! -d "fabric-samples/incanto/" ]
 then
 	echo "=== Copying files ==="
+	mkdir fabric-samples/incanto/
 	cp -r chaincode-go fabric-samples/incanto/chaincode-go
 	cd fabric-samples/incanto/chaincode-go/
 	go mod init incanto-cc.go
+	go mod tidy
 	cd ../../..
 fi
 
@@ -28,16 +30,16 @@ echo "=== Deploying the chaincode ==="
 sudo ./network.sh deployCC -ccn incanto-cc -ccp ../incanto/chaincode-go/ -ccl go
 
 echo "=== Running application ==="
-cd ..
+cd ../..
 #cd asset-transfer-basic/application-javascript/
-cd incanto/application-server/
+cd application-server/
 if [ -d "wallet/" ]
 then
 	sudo rm -r wallet/
 fi
 if [ ! -d "node-modules/" ]
 then
-	sudo npm install
+	npm install
 fi
 node app.js
 
