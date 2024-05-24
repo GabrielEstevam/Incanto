@@ -8,3 +8,11 @@ This command will trigger the script that builds the network, deploys the contra
 ```
 ./initing_network.sh
 ```
+
+To run the aplication
+
+```
+cd app
+npm install
+node index.js
+```
