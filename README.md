@@ -6,7 +6,7 @@ Incanto blockchain chaincode and server application
 This command will trigger the script that builds the network, deploys the contract and starts the application server
 
 ```
-./initing_network.sh
+sh initing_network.sh
 ```
 
 To run the aplication
