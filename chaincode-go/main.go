@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	pb "github.com/hyperledger/fabric/protos/peer"
+	//"github.com/hyperledger/fabric/core/chaincode/shim"
+	//pb "github.com/hyperledger/fabric/protos/peer"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+   	pb "github.com/hyperledger/fabric-protos-go/peer"
 )
 
 // Fingerprint Chaincode implementation
@@ -83,7 +85,7 @@ func (t *FingerprintChaincode) query(stub shim.ChaincodeStubInterface, args []st
 
 // Auxiliar functions
 func structToJson (fingerprint Fingerprint) string {
-	var json = "{id:" + fingerprint.id + ",value:" + fingerprint.value + "}"
+	var json = "{\"id\": \"" + fingerprint.id + "\",\"value\": \"" + fingerprint.value + "\"}"
 	return json
 }
 
