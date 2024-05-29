@@ -6,6 +6,8 @@ const path = require('path')
 const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('../fabric-samples/test-application/javascript/CAUtil.js')
 const { buildCCPOrg1, buildWallet } = require('../fabric-samples/test-application/javascript/AppUtil.js')
 
+const fs = require('fs')
+
 const channelName = 'mychannel'
 const chaincodeName = 'incanto'
 const mspOrg1 = 'Org1MSP'
@@ -14,8 +16,24 @@ const org1UserId = 'appUser'
 
 const express = require('express')
 const bodyParser = require('body-parser')
+const multer = require('multer')
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+	  cb(null, 'uploads/')
+	},
+	filename: function (req, file, cb) {
+	  cb(null, file.originalname)
+	}
+  })
+  
+const upload = multer({ storage })
+//const upload = multer({ dest: 'uploads/' })
+
 const app = express()
-app.use(bodyParser.urlencoded({ extended: true }))
+//app.use(bodyParser.urlencoded({ extended: true }))
+//app.use(upload.array())
+//app.use(express.json())
+//app.use(express.urlencoded({ extended: true }))
 const port = 3000
 
 let ccp
@@ -23,11 +41,32 @@ let caClient
 let wallet
 let gateway
 
+let base64str
+
 function prettyJSONString(inputString) {
 	return JSON.stringify(JSON.parse(inputString), null, 2)
 }
 
+// function to encode file data to base64 encoded string
+function base64_encode(file) {
+    // read binary data
+    var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer.from(bitmap).toString('base64');
+}
+
 async function main() {
+	//base64str = base64_encode('files/incanto.jpg')
+	//base64str = base64_encode('files/incanto_36_fingerprint.txt')
+	/*base64str = base64_encode('files/incanto_36_timelapsed.mp4')
+	console.log(base64str)*/
+
+	/*fs.writeFile('image.png', base64str, {encoding: 'base64'}, function(err) {
+		console.log('File created');
+	});*/
+
+	console.log('----------------------------------')
+
 	try {
 		ccp = buildCCPOrg1()
 
@@ -90,10 +129,12 @@ async function sendTransaction(params) {
 
 		// Submit a Transaction
 		console.log('\n--> Submit Transaction: store, creates new part asset with ID and value arguments');
+		console.log(params)
 		try {
 			result = await contract.submitTransaction('store', params.id, params.value);
 			result = "Transação enviada com sucesso"
-		} catch {
+		} catch (error) {
+			console.log(error)
 			result = "Ocorreu um erro ao enviar a transação"
 		}
 
@@ -122,8 +163,20 @@ async function getRegister(params) {
 		console.log(params.id)
 		try {
 			result = await contract.evaluateTransaction('query', params.id)
-			console.log(result)
-			//result = `${prettyJSONString(result.toString())}`
+			//console.log(result)
+			console.log(JSON.parse(result).value)
+
+			/*fs.writeFile('image_result2.png', JSON.parse(result).value, {encoding: 'base64'}, function(err) {
+				console.log('File created');
+			});*/
+
+			/*fs.writeFile('files/csv_result.txt', JSON.parse(result).value, {encoding: 'base64'}, function(err) {
+				console.log('File created');
+			});*/
+
+			/*fs.writeFile('files/timelapsed_result.mp4', JSON.parse(result).value, {encoding: 'base64'}, function(err) {
+				console.log('File created');
+			});*/
 		} catch (error){
 			console.log(error)
 			result = "Registro não encontrado"
@@ -134,66 +187,6 @@ async function getRegister(params) {
 	}
 	return result
 }
-
-/*async function getRegistersFromID(params) {
-	let result
-	try {
-
-		await gateway.connect(ccp, {
-			wallet,
-			identity: org1UserId,
-			discovery: { enabled: true, asLocalhost: true }
-		})
-
-		const network = await gateway.getNetwork(channelName)
-
-		const contract = network.getContract(chaincodeName)
-
-		// Query the ledger
-		console.log('\n--> Evaluate Transaction: GetGasTransfersFromID, function returns all gas transfers with from id')
-		try {
-
-			result = await contract.evaluateTransaction('GetGasTransfersFromID', params.fromID)
-			result = `${prettyJSONString(result.toString())}`
-		} catch {
-			result = "Registro não encontrado"
-		}
-
-	} finally {
-		gateway.disconnect();
-	}
-	return result
-}
-
-async function getRegistersToID(params) {
-	let result
-	try {
-
-		await gateway.connect(ccp, {
-			wallet,
-			identity: org1UserId,
-			discovery: { enabled: true, asLocalhost: true }
-		})
-
-		const network = await gateway.getNetwork(channelName)
-
-		const contract = network.getContract(chaincodeName)
-
-		// Query the ledger
-		console.log('\n--> Evaluate Transaction: GetGasTransfersToID, function returns all gas transfers with to id')
-		try {
-
-			result = await contract.evaluateTransaction('GetGasTransfersToID', params.fromID)
-			result = `${prettyJSONString(result.toString())}`
-		} catch {
-			result = "Registro não encontrado"
-		}
-
-	} finally {
-		gateway.disconnect();
-	}
-	return result
-}*/
 
 /*app.post('/getAll', (req, res) => {
 	console.log("==== new request ====")
@@ -207,23 +200,19 @@ app.post('/sendTransaction', (req, res) => {
   	result.then(res.send.bind(res))
 })
 
+app.post('/receiveFile', upload.single('file'), (req, res) => {
+	console.log("==== receive file ====")
+	//let result = sendTransaction(req.body)
+  	//result.then(res.send.bind(res))
+	console.log(req.file)
+	res.json(req.file)
+})
+
 app.post('/getRegister', (req, res) => {
 	console.log("==== new request ====")
 	let result = getRegister(req.body)
   	result.then(res.send.bind(res))
 })
-
-/*app.post('/getRegistersFromID', (req, res) => {
-	console.log("==== new request ====")
-	let result = getRegistersFromID(req.body)
-  	result.then(res.send.bind(res))
-})
-
-app.post('/getRegistersToID', (req, res) => {
-	console.log("==== new request ====")
-	let result = getRegistersToID(req.body)
-  	result.then(res.send.bind(res))
-})*/
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
