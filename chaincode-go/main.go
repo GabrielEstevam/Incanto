@@ -11,12 +11,29 @@ import (
 
 // Fingerprint Chaincode implementation
 type FingerprintChaincode struct {
-}
-
-// Fingerpring describes the print and part details
-type Fingerprint struct {
-	id             string `json:"ID"`
-	value          string `json:"value"` // print cloud
+	// Asset identification
+	ID                string `json:"ID"`
+	Date		      string `json:"Date"`
+	Printer           string `json:"Printer"`
+	Service           string `json:"Service"`
+	Owner             string `json:"Owner"`
+	Image		      string `json:"Image"`
+	// Original Design
+	STLfile			  string `json:"STLfile"`
+	// Printing characteristics
+	PrintDuration     string `json:"PrintDuration"`
+	NozzleTemperature string `json:"NozzleTemperature"`
+	PlateTemperature  string `json:"PlateTemperature"`
+	LayerHeight       string `json:"LayerHeight"`
+	Resolution        string `json:"Resolution"`
+	InfillDensity     string `json:"InfillDensity"`
+	// Part characteristics
+	Material          string `json:"Material"`
+	Weight            string `json:"Weight"`
+	FilamentSpent     string `json:"FilamentSpent"`
+	// Sensors data (Fingerprint)
+	FingerprintCloud  string `json:"FingerprintCloud"`
+	TimelapsedVideo   string `json:"TimelapsedVideo"`
 }
 
 func (t *FingerprintChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
@@ -29,10 +46,10 @@ func (t *FingerprintChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Respo
 	fmt.Println("Invoke method gets called")
 	function, args := stub.GetFunctionAndParameters()
 	if function == "store" {
-		// Create a register to a fingerprint
+		// Create a register to a asset
 		return t.store(stub, args)
 	} else if function == "query" {
-		// Query a fingerprint from ID
+		// Query a asset from ID
 		return t.query(stub, args)
 	}
 	return shim.Error("Invalid invoke function name. Expecting \"store\" or \"query\"")
@@ -42,20 +59,36 @@ func (s *FingerprintChaincode) store(stub shim.ChaincodeStubInterface, args []st
 	var err error
 	var id = args[0]
 
-	exists := fingerprintExists(stub, id)
+	exists := assetExists(stub, id)
 	if exists {
-		jsonResp := "{\"Error\":\"the fingerprint " + id + " already exists\"}"
+		jsonResp := "{\"Error\":\"the asset " + id + " already exists\"}"
 		return shim.Error(jsonResp)
 	}
 
-	fingerprint := Fingerprint {
-	  id:  	        args[0],
-	  value:	    args[1],
+	asset := FingerprintChaincode {
+	  	ID: args[0],
+		Date: args[1],
+		Printer: args[2],
+		Service: args[3],
+		Owner: args[4],
+		Image: args[5],
+		STLfile: args[6],
+		PrintDuration: args[7],
+		NozzleTemperature: args[8],
+		PlateTemperature: args[9],
+		LayerHeight: args[10],
+		Resolution: args[11],
+		InfillDensity: args[12],
+		Material: args[13],
+		Weight: args[14],
+		FilamentSpent: args[15],
+		FingerprintCloud: args[16],
+		TimelapsedVideo: args[17],
 	}
 
-	fingerprintJSON := structToJson(fingerprint)
+	assetJSON := structToJson(asset)
 
-	err = stub.PutState(id, []byte(fingerprintJSON))
+	err = stub.PutState(id, []byte(assetJSON))
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -69,34 +102,35 @@ func (t *FingerprintChaincode) query(stub shim.ChaincodeStubInterface, args []st
 	var id = args[0]
 
 	// Get the state from the ledger
-	Fingerprintbytes, err := stub.GetState(id)
+	Assetbytes, err := stub.GetState(id)
 	if err != nil {
 		jsonResp := "{\"Error\":\"Failed to get state for " + id + "\"}"
 		return shim.Error(jsonResp)
 	}
 
-	if Fingerprintbytes == nil {
+	if Assetbytes == nil {
 		jsonResp := "{\"Error\":\"Nil fingerprint for " + id + "\"}"
 		return shim.Error(jsonResp)
 	}
 
-	return shim.Success(Fingerprintbytes)
+	return shim.Success(Assetbytes)
 }
 
 // Auxiliar functions
-func structToJson (fingerprint Fingerprint) string {
-	var json = "{\"id\": \"" + fingerprint.id + "\",\"value\": \"" + fingerprint.value + "\"}"
+func structToJson (partAsset FingerprintChaincode) string {
+	//var json = "{\"ID\": \"" + partAsset.ID + "\", \"Date\": \"" + partAsset.Date + "\"}"
+	var json = "{\"ID\": \"" + partAsset.ID + "\", \"Date\": \"" + partAsset.Date + "\", \"Printer\": \"" + partAsset.Printer + "\", \"Service\": \"" + partAsset.Service + "\", \"Owner\": \"" + partAsset.Owner + "\", \"Image\": \"" + partAsset.Image + "\", \"STLfile\": \"" + partAsset.STLfile + "\", \"PrintDuration\": \"" + partAsset.PrintDuration + "\", \"NozzleTemperature\": \"" + partAsset.NozzleTemperature + "\", \"PlateTemperature\": \"" + partAsset.PlateTemperature + "\", \"LayerHeight\": \"" + partAsset.LayerHeight + "\", \"Resolution\": \"" + partAsset.Resolution + "\", \"InfillDensity\": \"" + partAsset.InfillDensity + "\", \"Material\": \"" + partAsset.Material + "\", \"Weight\": \"" + partAsset.Weight + "\", \"FilamentSpent\": \"" + partAsset.FilamentSpent + "\", \"FingerprintCloud\": \"" + partAsset.FingerprintCloud + "\", \"TimelapsedVideo\": \"" + partAsset.TimelapsedVideo + "\"},"
 	return json
 }
 
-// FingerprintExists returns true when transfer with given ID exists in world state
-func fingerprintExists (stub shim.ChaincodeStubInterface, id string) bool {
-	fingerprintJSON, err := stub.GetState(id)
+// AssetExists returns true when transfer with given ID exists in world state
+func assetExists (stub shim.ChaincodeStubInterface, id string) bool {
+	assetJSON, err := stub.GetState(id)
 	if err != nil {
 	  	return false
 	}
   
-	return fingerprintJSON != nil
+	return assetJSON != nil
 }
 
 func main() {
