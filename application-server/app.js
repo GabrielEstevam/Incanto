@@ -17,6 +17,7 @@ const org1UserId = 'appUser'
 const express = require('express')
 const bodyParser = require('body-parser')
 const multer = require('multer')
+const { maxHeaderSize } = require('http')
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 	  cb(null, 'uploads/')
@@ -30,7 +31,7 @@ const upload = multer({ storage })
 //const upload = multer({ dest: 'uploads/' })
 
 const app = express()
-//app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }))
 //app.use(upload.array())
 //app.use(express.json())
 //app.use(express.urlencoded({ extended: true }))
@@ -86,36 +87,10 @@ async function main() {
 
 }
 
-/*async function getAll() {
+async function sendTransaction(req) {
 	let result
-	try {
-
-		await gateway.connect(ccp, {
-			wallet,
-			identity: org1UserId,
-			discovery: { enabled: true, asLocalhost: true }
-		})
-
-		const network = await gateway.getNetwork(channelName)
-
-		const contract = network.getContract(chaincodeName)
-
-		// Get all gas tranfers
-		console.log('\n--> Evaluate Transaction: GetAllGasTransfers, function returns all the current gas transfer on the ledger')
-		try {
-			result = await contract.evaluateTransaction('GetAllGasTransfers')
-			result = `${prettyJSONString(result.toString())}`
-		} catch {
-			result = "Ocorreu um erro ao consultar os dados"
-		}
-	} finally {
-		gateway.disconnect()
-	}
-	return result;
-}*/
-
-async function sendTransaction(params) {
-	let result
+	let params = req.body
+	let files = req.files
 	try {
 		await gateway.connect(ccp, {
 			wallet,
@@ -128,10 +103,29 @@ async function sendTransaction(params) {
 		const contract = network.getContract(chaincodeName)
 
 		// Submit a Transaction
-		console.log('\n--> Submit Transaction: store, creates new part asset with ID and value arguments');
-		console.log(params)
+		console.log('\n--> Submit Transaction: store, creates new part asset with ID and value arguments')
 		try {
-			result = await contract.submitTransaction('store', params.id, params.value);
+			result = await contract.submitTransaction('store', 
+				params.id, 
+				params.date,
+				params.printer,
+				params.service,
+				params.owner,
+				base64_encode(files['image'][0].path),
+				base64_encode(files['stlfile'][0].path),
+				params.printduration,
+				params.nozzletemperature,
+				params.platetemperature,
+				params.layerheight,
+				params.resolution,
+				params.infilldensity,
+				params.material,
+				params.weight,
+				params.filamentspent,
+				base64_encode(files['fingerprintcloud'][0].path),
+				base64_encode(files['timelapsedvideo'][0].path)
+			)
+
 			result = "Transação enviada com sucesso"
 		} catch (error) {
 			console.log(error)
@@ -164,7 +158,7 @@ async function getRegister(params) {
 		try {
 			result = await contract.evaluateTransaction('query', params.id)
 			//console.log(result)
-			console.log(JSON.parse(result).value)
+			//console.log(JSON.parse(result).value)
 
 			/*fs.writeFile('image_result2.png', JSON.parse(result).value, {encoding: 'base64'}, function(err) {
 				console.log('File created');
@@ -188,27 +182,33 @@ async function getRegister(params) {
 	return result
 }
 
-/*app.post('/getAll', (req, res) => {
+app.post('/sendTransaction', 
+	upload.fields([
+		{name: 'image', maxCount: 1}, 
+		{name: 'stlfile', maxCount: 1},
+		{name: 'fingerprintcloud', maxCount: 1},
+		{name: 'timelapsedvideo', maxCount: 1}
+	]
+	), function (req, res) {
 	console.log("==== new request ====")
-	let result = getAll()
-  	result.then(res.send.bind(res))
-})*/
-
-app.post('/sendTransaction', (req, res) => {
-	console.log("==== new request ====")
-	let result = sendTransaction(req.body)
+	let result = sendTransaction(req)
   	result.then(res.send.bind(res))
 })
 
-app.post('/receiveFile', upload.single('file'), (req, res) => {
+app.post('/receiveFile', 
+	upload.fields([
+		{name: 'image', maxCount: 1}, 
+		{name: 'stlfile', maxCount: 1}]
+	), (req, res) => {
+	
 	console.log("==== receive file ====")
 	//let result = sendTransaction(req.body)
   	//result.then(res.send.bind(res))
-	console.log(req.file)
-	res.json(req.file)
+	console.log(req.files)
+	res.json(req.files['image'][0].path)
 })
 
-app.post('/getRegister', (req, res) => {
+app.post('/getRegister', upload.none(), (req, res) => {
 	console.log("==== new request ====")
 	let result = getRegister(req.body)
   	result.then(res.send.bind(res))
