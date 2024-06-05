@@ -15,6 +15,7 @@
 'use strict';
 
 const { WorkloadModuleBase } = require('@hyperledger/caliper-core');
+const fs = require('fs')
 
 const SupportedConnectors = ['fabric'];
 
@@ -100,6 +101,22 @@ class OperationBase extends WorkloadModuleBase {
             contractArguments: Object.keys(args).map(k => args[k].toString()),
             readOnly: query
         };
+    }
+
+    // function to encode file data to base64 encoded string
+    base64_encode(file) {
+        // read binary data
+        var bitmap = fs.readFileSync(file);
+        // convert binary data to base64 encoded string
+        return new Buffer.from(bitmap).toString('base64');
+    }
+
+    // function to read json from file
+    read_json(file) {
+        // read binary data
+        let bitmap = fs.readFileSync(file)
+        // convert binary data to json
+        return JSON.parse(bitmap)
     }
 }
 

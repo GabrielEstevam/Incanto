@@ -33,7 +33,7 @@ class Open extends OperationBase {
      */
     async submitTransaction() {
         //let createArgs = this.simpleState.getOpenAccountArguments();
-        await this.sutAdapter.sendRequests(this.createConnectorRequest('query', ['1']));
+        await this.sutAdapter.sendRequests(this.createConnectorRequest('query', ['13']));
         //await this.sutAdapter.sendRequests(this.createConnectorRequest('query', createArgs));
     }
 }
