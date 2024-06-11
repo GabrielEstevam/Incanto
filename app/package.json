@@ -1,0 +1,17 @@
+{
+    "name": "incanto-application-server",
+    "version": "1.0.0",
+    "description": "Incanto app implemented in JavaScript",
+    "engines": {
+        "node": ">=12",
+        "npm": ">=5"
+    },
+    "engineStrict": true,
+    "author": "GabrielEstevam",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "fabric-ca-client": "^2.2.4",
+        "fabric-network": "^2.2.4",
+        "fs": "^0.0.1-security"
+    }
+}
