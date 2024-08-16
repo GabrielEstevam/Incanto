@@ -16,3 +16,10 @@ cd app
 npm install
 node index.js
 ```
+
+To run the tests
+```
+cd caliper
+sh caliper_run.sh
+```
+

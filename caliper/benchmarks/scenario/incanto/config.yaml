@@ -5,24 +5,26 @@ test:
     performance with incanto asset creation.
   workers:
     number: 1
+  performance:
+    shouldbefast: true
   rounds:
     - label: store
       description: >-
         Test description for the part asset creation through the deployed
         contract.
-      txNumber: 1
+      txNumber: 10
       rateControl:
         type: fixed-rate
         opts:
-          tps: 1
+          tps: 10
       workload:
         module: benchmarks/scenario/incanto/store.js
-    - label: query
-      description: Test description for the query performance of the deployed contract.
-      txNumber: 1
-      rateControl:
-        type: fixed-rate
-        opts:
-          tps: 1
-      workload:
-        module: benchmarks/scenario/incanto/query.js
+    #- label: query
+    #  description: Test description for the query performance of the deployed contract.
+    #  txNumber: 1
+    #  rateControl:
+    #    type: fixed-rate
+    #    opts:
+    #      tps: 1
+    #  workload:
+    #     module: benchmarks/scenario/incanto/query.js

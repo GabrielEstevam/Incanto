@@ -125,7 +125,7 @@ async function sendTransaction(req) {
 				base64_encode(files['fingerprintcloud'][0].path),
 				base64_encode(files['timelapsedvideo'][0].path)
 			)
-
+			console.log(Buffer.from(result).toString())
 			result = "Transação enviada com sucesso"
 		} catch (error) {
 			console.log(error)

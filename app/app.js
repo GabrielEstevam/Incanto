@@ -20,8 +20,8 @@ let ccp
 let caClient
 let wallet
 let gateways = []
-let nGateways = 2
-let txs = 5
+let nGateways = 1
+let txs = 1
 
 let base64str
 
@@ -85,9 +85,10 @@ async function workload(gateway, txs, workload) {
 		await sendTransaction(gateway).then(function(result){
 			console.log('result:' + result)
 		})
-		/*await getRegister(gateway, '19009717983').then(function(result){
+		/*await getRegister(gateway, '59756270756').then(function(result){
 			console.log('result:')
 		})*/
+
 	}
 	response_time = (Date.now() - initial_time)/txs
 	console.log('Workload ' + workload + ' : ' + response_time)
@@ -98,7 +99,7 @@ async function sendTransaction(gateway) {
 	let result
 
 	let id = Math.floor(Math.random() * 99999999999).toString()
-	let assertID = '36'
+	let assertID = '37'
 	let params = read_json(pathFiles + assertID +'/params.json')
 	let image = base64_encode(pathFiles + assertID + '/image.jpg')
 	let stl = base64_encode(pathFiles + assertID + '/stl.stl')
@@ -170,7 +171,7 @@ async function getRegister(gateway, id) {
 		console.log(id)
 		try {
 			result = await contract.evaluateTransaction('query', id)
-			//console.log(result)
+			console.log(result)
 		} catch (error){
 			console.log(error)
 			result = "Registro não encontrado"

@@ -1,0 +1,16 @@
+
+{
+    "Date": "04062024",
+    "Printer": "BigPrinter",
+    "Service": "Unipar",
+    "Owner": "Gabriel",
+    "PrintDuration": "19.15 minutes",
+    "NozzleTemperature": "180º C",
+    "PlateTemperature": "40º C",
+    "LayerHeight": "0.3 mm",
+    "Resolution": "0.3 mm",
+    "InfillDensity": "20%",
+    "Material": "PLA",
+    "Weight": "2.2 g",
+    "FilamentSpent": "0.73 m"
+}

@@ -35,6 +35,8 @@ class Open extends OperationBase {
      * Assemble TXs for opening new accounts.
      */
     async submitTransaction() {
+        let id = Math.floor(Math.random() * 99999999999).toString()
+        console.log(id)
         let assertID = '36'
         let json_content = this.read_json(pathFiles + assertID +'/params.json')
         let image = this.base64_encode(pathFiles + assertID + '/image.jpg')
@@ -43,7 +45,7 @@ class Open extends OperationBase {
         let video = this.base64_encode(pathFiles + assertID + '/video.mp4')
 
         await this.sutAdapter.sendRequests(this.createConnectorRequest('store', [
-            '16',
+            id,
             json_content.Date,
             json_content.Printer,
             json_content.Service,

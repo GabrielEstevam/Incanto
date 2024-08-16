@@ -28,18 +28,18 @@ echo "=== Start up network and create a channel ==="
 echo "=== Deploying the chaincode ==="
 #sudo ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go/ -ccl go
 sudo ./network.sh deployCC -ccn incanto -ccp ../incanto/chaincode-go/ -ccl go
-echo "=== Running application ==="
-cd ../..
+#echo "=== Running application ==="
+#cd ../..
 #cd asset-transfer-basic/application-javascript/
-cd application-server/
-if [ -d "wallet/" ]
-then
-	sudo rm -r wallet/
-fi
-if [ ! -d "node-modules/" ]
-then
-	npm install
-fi
+#cd application-server/
+#if [ -d "wallet/" ]
+#then
+#	sudo rm -r wallet/
+#fi
+#if [ ! -d "node-modules/" ]
+#then
+#	npm install
+#fi
 #node app.js
 
 

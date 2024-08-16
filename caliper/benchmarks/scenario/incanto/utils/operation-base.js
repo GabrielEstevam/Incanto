@@ -14,10 +14,10 @@
 
 'use strict';
 
-const { WorkloadModuleBase } = require('@hyperledger/caliper-core');
+const { WorkloadModuleBase } = require('@hyperledger/caliper-core')
 const fs = require('fs')
 
-const SupportedConnectors = ['fabric'];
+const SupportedConnectors = ['fabric']
 
 /**
  * Base class for simple operations.
@@ -118,6 +118,21 @@ class OperationBase extends WorkloadModuleBase {
         // convert binary data to json
         return JSON.parse(bitmap)
     }
+
+    // get the last asset id and increment at one
+    increment_id() {
+        let id = fs.readFileSync('./benchmarks/scenario/incanto/utils/last_id.txt')
+        id = parseInt(id) + 1
+        id = id.toString()
+        fs.writeFile('./benchmarks/scenario/incanto/utils/last_id.txt', id, function(err) {
+            if(err) {
+                return console.log('erro');
+            }
+        })
+        console.log('id' + id)
+        return id
+    }
+
 }
 
 module.exports = OperationBase;
