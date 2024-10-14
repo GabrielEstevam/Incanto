@@ -2,8 +2,8 @@
 {
     "Date": "04062024",
     "Printer": "BigPrinter",
-    "Service": "Unipar",
-    "Owner": "Gabriel",
+    "Service": "uni",
+    "Owner": "owner",
     "PrintDuration": "19.15 minutes",
     "NozzleTemperature": "180º C",
     "PlateTemperature": "40º C",
